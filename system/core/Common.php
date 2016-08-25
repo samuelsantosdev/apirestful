@@ -651,9 +651,18 @@ if ( ! function_exists('_exception_handler'))
 	 * @param	Exception	$exception
 	 * @return	void
 	 */
-	function _exception_handler($exception)
+	function _exception_handler($ex)
 	{
-		$_error =& load_class('Exceptions', 'core');
+                
+            error_log("ERROR:" . $ex->getMessage());
+            $CI =& get_instance();
+            $CI->config->load("status_code", TRUE);
+            $arrayStatus = $CI->config->item("status_code");
+            header('Content-Type: application/json');
+            header("HTTP/1.1 {$ex->getCode()} " . $arrayStatus["status_code"][$ex->getCode()] . " ");
+            echo json_encode( array('code'=>$ex->getCode(),'message'=>$ex->getMessage()));
+            exit(1);
+            /*$_error =& load_class('Exceptions', 'core');
 		$_error->log_exception('error', 'Exception: '.$exception->getMessage(), $exception->getFile(), $exception->getLine());
 
 		// Should we display the error?
@@ -661,7 +670,7 @@ if ( ! function_exists('_exception_handler'))
 		{
 			$_error->show_exception($exception);
 		}
-
+                */
 		exit(1); // EXIT_ERROR
 	}
 }

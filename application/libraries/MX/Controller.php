@@ -42,6 +42,7 @@ class MX_Controller
 	
 	public function __construct() 
 	{
+            try{
 		$class = str_replace(CI::$APP->config->item('controller_suffix'), '', get_class($this));
 		log_message('debug', $class." MX_Controller Initialized");
 		Modules::$registry[strtolower($class)] = $this;	
@@ -52,6 +53,10 @@ class MX_Controller
 		
 		/* autoload module items */
 		$this->load->_autoloader($this->autoload);
+            }
+            catch(Exception $ex){
+                $this->output_error($ex);
+            }
 	}
 	
 	public function __get($class) {
