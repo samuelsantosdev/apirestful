@@ -25,6 +25,14 @@ class CustomerServices{
         return false;
     }
     
+    public function Auth($apikey, $secretkey){
+        $customer = $this->CI->db->get_where("Account", array('SecretKey'=>$secretkey, 'ApiKey'=>$apikey));
+        if(empty($customer))
+            throw new Exception ("Customer not exists", 404);
+        
+        return $customer->row();
+    }
+    
     private function Validate(){
         
     }
