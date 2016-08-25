@@ -12,15 +12,18 @@ class TokenServices{
     private function RefreshedToken($tokenDb){
         $time = strtotime($tokenDb->LastActivity);
         $endTime = date("Y-m-d H:i:s", strtotime('+5 minutes', $time));
-        if($endTime <= date("Y-m-d H:i:s"))
+        if($endTime <= date("Y-m-d H:i:s")){
             throw new Exception ("Token Expired, refresh your token", 403);
+        }
     }
     
     private function ExpiredToken($tokenDb){
         $time = strtotime($tokenDb->LastActivity);
         $endTime = date("Y-m-d H:i:s", strtotime('+15 minutes', $time));
-        if($endTime <= date("Y-m-d H:i:s"))
+        if($endTime <= date("Y-m-d H:i:s")){
+            $this->CI->db->update("Token", array("Active"=>false), array("Id" => $tokenDb->Id) );
             throw new Exception ("RefreshToken Expired", 403);
+        }        
     }
     
     public function RefreshToken($refresh){
@@ -28,7 +31,7 @@ class TokenServices{
         if($tokenDb->row() != null){
             $tokenRow = $tokenDb->row();
             
-            $this->ExpiredToken($tokenDb);
+            $this->ExpiredToken($tokenRow);
                 
             $token = trim(com_create_guid(), '{}');
             $this->CI->db->update("Token", array("Token"=>$token), array("Id" => $tokenRow->Id) );
@@ -39,19 +42,23 @@ class TokenServices{
                     'LastActivity'=> date("Y-m-d H:i:s"),
                 );
         }
+        return FALSE;
     }
     
-    public function ValidToken($accountId, $token){
-        $tokenDb = $this->CI->db->get_where("Token", array("AccountId"=>$accountId, "Active"=>1, "Token"=>$token));
+    public function ValidToken($token = null){
+        if(empty($token))
+            throw new Exception ("Invalid Token", 403);
+        
+        $tokenDb = $this->CI->db->get_where("Token", array("Active"=>1, "Token"=>$token));
         if($tokenDb->row() != null){
             $tokenRow = $tokenDb->row();
             
-            $this->ExpiredToken($tokenDb);
-            $this->RefreshedToken($tokenDb);
+            $this->ExpiredToken($tokenRow);
+            $this->RefreshedToken($tokenRow);
             
             return TRUE;            
         }
-        return FALSE;
+        throw new Exception ("Invalid Token", 403);
     }
     
     public function CreateToken($accountId){

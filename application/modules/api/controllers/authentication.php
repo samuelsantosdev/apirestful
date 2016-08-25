@@ -19,8 +19,6 @@ class Authentication extends MX_Controller{
             if ( $this->requestapi->IsValid( $this->input->post(), $this->router->fetch_method(), get_class() ) ){
                 $this->load->library("customerservices");
                 $customerData = $this->customerservices->Auth($this->input->post("apikey"), $this->input->post("secretkey"));
-                
-                $this->load->library("tokenservices");
                 $token = $data = $this->tokenservices->CreateToken($customerData->Id);                
                 $responseArray = $this->responseapi->DataToReponse($token, $this->requestapi->DataRequest());
                 $this->output($responseArray);
@@ -37,12 +35,9 @@ class Authentication extends MX_Controller{
      */
     public function RefreshToken(){
         try{
-            if ( $this->requestapi->IsValid( $this->input->post(), $this->router->fetch_method(), get_class() ) ){
-                
-                $this->load->library("tokenservices");
+            if ( $this->requestapi->IsValid( $this->input->post(), $this->router->fetch_method(), get_class() ) ){                
                 $token = $data = $this->tokenservices->RefreshToken($this->input->post("refreshtoken"));
-                $responseArray = $this->responseapi->DataToReponse($token, $this->requestapi->DataRequest());
-                
+                $responseArray = $this->responseapi->DataToReponse($token, $this->requestapi->DataRequest());                
                 $this->output($responseArray);
             }
         } catch (Exception $ex) {

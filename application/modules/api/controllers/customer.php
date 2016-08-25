@@ -16,6 +16,7 @@ class Customer extends MX_Controller{
      */
     public function CreateAccount(){
         try{
+            $this->tokenservices->ValidToken($this->input->post("token"));
             if ( $this->requestapi->IsValid( $this->input->post(), $this->router->fetch_method(), get_class() ) ){
                 $this->load->library("customerservices");
                 $responseArray = $this->customerservices->CreateAccount($this->input->post("email"), $this->input->post("senha"));
