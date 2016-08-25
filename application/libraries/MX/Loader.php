@@ -172,7 +172,7 @@ class MX_Loader extends CI_Loader
 			
 		$_alias = $class;
 		
-		list($path, $_response) = Modules::find($response, $this->_module, '$responses/');
+		list($path, $_response) = Modules::find($response, $this->_module, 'responses/');
 			
 		if ($path === FALSE) {			
 			$this->_ci_load_class($response);

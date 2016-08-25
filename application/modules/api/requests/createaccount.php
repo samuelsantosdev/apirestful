@@ -3,6 +3,6 @@
 class CreateAccount {
     
     public $email;    
-    public $senha;
+    public $pass;
     
 }

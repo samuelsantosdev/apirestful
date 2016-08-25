@@ -57,4 +57,19 @@ class MX_Controller
 	public function __get($class) {
 		return CI::$APP->$class;
 	}
+        
+        protected function output_error($ex){
+            error_log("ERROR:" . $ex->getMessage());
+            $this->config->load("status_code", TRUE);
+            $arrayStatus = $this->config->item("status_code");
+            $this->output->set_header("HTTP/1.1 {$ex->getCode()} " . $arrayStatus["status_code"][$ex->getCode()] . " ");
+            $this->output->set_content_type('application/json')->set_output( json_encode( array('code'=>$ex->getCode(),'message'=>$ex->getMessage())) );
+        }
+        
+        protected function output(array $obj){
+            $this->config->load("status_code", TRUE);
+            $arrayStatus = $this->config->item("status_code");
+            $this->output->set_header("HTTP/1.1 200 " . $arrayStatus["status_code"][200] . " ");
+            $this->output->set_content_type('application/json')->set_output( json_encode( $obj) );
+        }
 }

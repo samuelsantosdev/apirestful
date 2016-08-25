@@ -4,25 +4,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class RequestAPI{
     
     private $CI;
+    private $data = array();
     
     function __construct() {
         $this->CI =& get_instance();
     }
     
+    public function DataRequest(){
+        return $this->data;
+    }
+    
     public function IsValid( $data, $method, $class ){
         $requestParams = $this->getInfos($class, $method);
         if($_SERVER["REQUEST_METHOD"] != strtoupper($requestParams['method']))
-            throw new Exception("Method Not Allowed", 405);
+            throw new Exception("Method {$_SERVER["REQUEST_METHOD"]} not allowed for this URI", 405);
         
         if($this->CompareRequest($data, $requestParams['request']) == FALSE || empty($data))
-            throw new Exception("Bad Request", 400);
+            throw new Exception("Json properties invalid", 400);
         
         return TRUE;
     }
     
     private function CompareRequest($data, $class){
         $this->CI->load->request($class);
-        $arrayProp = get_object_vars ( $this->CI->$class );
+        $arrayProp = array_keys(get_object_vars ( $this->CI->$class ));
         return count(array_diff(array_keys($data), $arrayProp)) == 0;                
     }
     
@@ -41,7 +46,7 @@ class RequestAPI{
                 $datas = explode("=", $line);
                 $annotationsArray[$datas[0]] = $datas[1];
             }
-            
+            $this->data = $annotationsArray;
             return $annotationsArray;
         }
         catch(Exception $ex){

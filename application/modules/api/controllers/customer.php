@@ -5,22 +5,25 @@ class Customer extends MX_Controller{
     
     function __construct() {
         parent::__construct();
-        header('Content-Type: application/json');
         $this->load->library('requestapi');
+        $this->load->library('responseapi');
     }
     
     /**
-     * method=get
+     * method=post
      * request=createaccount
      * response=account
      */
     public function CreateAccount(){
         try{
             if ( $this->requestapi->IsValid( $this->input->post(), $this->router->fetch_method(), get_class() ) ){
-                
+                $this->load->library("customerservices");
+                $responseArray = $this->customerservices->CreateAccount($this->input->post("email"), $this->input->post("senha"));
+                $responseArray = $this->responseapi->DataToReponse($responseArray, $this->requestapi->DataRequest());
+                $this->output($responseArray);
             }
         } catch (Exception $ex) {
-            $this->output->set_output(json_encode(array('code'=>$ex->getCode(), 'message'=>'Internal Server Error: '.$ex->getMessage())));
-        }               
+            $this->output_error($ex);
+        }
     }
 }
