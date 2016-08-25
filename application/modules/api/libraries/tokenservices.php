@@ -56,7 +56,7 @@ class TokenServices{
             $this->ExpiredToken($tokenRow);
             $this->RefreshedToken($tokenRow);
             
-            return TRUE;            
+            return $tokenRow->AccountId;            
         }
         throw new Exception ("Invalid Token", 403);
     }

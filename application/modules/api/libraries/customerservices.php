@@ -10,6 +10,9 @@ class CustomerServices{
     }
     
     public function CreateAccount($email, $senha){
+        
+        $this->Validate($email, $senha);
+        
         $secret = trim(com_create_guid(), '{}');
         $apikey = MD5(trim(com_create_guid(), '{}'));
         $data = array(
@@ -33,8 +36,12 @@ class CustomerServices{
         return $customer->row();
     }
     
-    private function Validate(){
+    private function Validate($email, $senha){
+        if(strlen($senha) < 4)
+            throw new Exception ("Password required four characteres or more", 400);
         
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL))
+            throw new Exception ("Invalid email", 400);        
     }
     
 }
