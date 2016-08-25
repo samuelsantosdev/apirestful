@@ -36,7 +36,10 @@ class Authentication extends MX_Controller{
     public function RefreshToken(){
         try{
             if ( $this->requestapi->IsValid( $this->input->post(), $this->router->fetch_method(), get_class() ) ){                
-                $token = $data = $this->tokenservices->RefreshToken($this->input->post("refreshtoken"));
+                $token = $this->tokenservices->RefreshToken($this->input->post("refreshtoken"));
+                if($token === false)
+                    throw new Exception ("RefreshToken invalid ", 403);
+                
                 $responseArray = $this->responseapi->DataToReponse($token, $this->requestapi->DataRequest());                
                 $this->output($responseArray);
             }

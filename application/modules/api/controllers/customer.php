@@ -51,16 +51,16 @@ class Customer extends MX_Controller{
     /**
      * method=get
      * request=token
-     * response=accounts
+     * response=account
      */
     public function GetAccounts(){
         try{
-            $this->accountId = $this->tokenservices->ValidToken($this->input->post("token"));
+            $this->accountId = $this->tokenservices->ValidToken($this->input->get("token"));
             $this->securityapi->IsAllowed( $this->accountId, $this->router->fetch_method(), get_class() );
             if ( $this->requestapi->IsValid( $this->input->get(), $this->router->fetch_method(), get_class() ) ){
                 $this->load->library("customerservices");
-                $responseArray = $this->customerservices->CreateAccount($this->input->post("email"), $this->input->post("senha"));
-                $responseArray = $this->responseapi->DataToReponse($responseArray, $this->requestapi->DataRequest());
+                $responseArray = $this->customerservices->GetAllAccounts(array("Removed"=>false));
+                $responseArray = $this->responseapi->DataToReponseList($responseArray, $this->requestapi->DataRequest());
                 $this->output($responseArray);
             }
         } catch (Exception $ex) {
@@ -73,13 +73,33 @@ class Customer extends MX_Controller{
      * request=token
      * response=account
      */
-    public function GetAccount($id){
+    public function GetAccountsDeleted(){
         try{
-            $this->accountId = $this->tokenservices->ValidToken($this->input->post("token"));
+            $this->accountId = $this->tokenservices->ValidToken($this->input->get("token"));
             $this->securityapi->IsAllowed( $this->accountId, $this->router->fetch_method(), get_class() );
             if ( $this->requestapi->IsValid( $this->input->get(), $this->router->fetch_method(), get_class() ) ){
                 $this->load->library("customerservices");
-                $responseArray = $this->customerservices->CreateAccount($this->input->post("email"), $this->input->post("senha"));
+                $responseArray = $this->customerservices->GetAllAccounts(array("Removed"=>true));
+                $responseArray = $this->responseapi->DataToReponseList($responseArray, $this->requestapi->DataRequest());
+                $this->output($responseArray);
+            }
+        } catch (Exception $ex) {
+            $this->output_error($ex);
+        }
+    }
+    
+    /**
+     * method=get
+     * request=token
+     * response=account
+     */
+    public function GetAccount(){
+        try{
+            $this->accountId = $this->tokenservices->ValidToken($this->input->get("token"));
+            $this->securityapi->IsAllowed( $this->accountId, $this->router->fetch_method(), get_class() );
+            if ( $this->requestapi->IsValid( $this->input->get(), $this->router->fetch_method(), get_class() ) ){
+                $this->load->library("customerservices");
+                $responseArray = $this->customerservices->GetAccount($this->input->get("id"));
                 $responseArray = $this->responseapi->DataToReponse($responseArray, $this->requestapi->DataRequest());
                 $this->output($responseArray);
             }
@@ -91,15 +111,16 @@ class Customer extends MX_Controller{
     /**
      * method=put
      * request=updateaccount
-     * response=reponsemessage
+     * response=account
      */
     public function UpdateAccount(){
         try{
+            $this->input->input_stream('token', FALSE);
             $this->accountId = $this->tokenservices->ValidToken($this->input->post("token"));
             $this->securityapi->IsAllowed( $this->accountId, $this->router->fetch_method(), get_class() );
             if ( $this->requestapi->IsValid( $this->input->post(), $this->router->fetch_method(), get_class() ) ){
                 $this->load->library("customerservices");
-                $responseArray = $this->customerservices->CreateAccount($this->input->post("email"), $this->input->post("senha"));
+                $responseArray = $this->customerservices->UpdateAccount($this->input->post());
                 $responseArray = $this->responseapi->DataToReponse($responseArray, $this->requestapi->DataRequest());
                 $this->output($responseArray);
             }
@@ -109,9 +130,9 @@ class Customer extends MX_Controller{
     }
     
     /**
-     * method=delete
+     * method=post
      * request=deleteaccount
-     * response=reponsemessage
+     * response=message
      */
     public function DeleteAccount(){
         try{
@@ -119,8 +140,8 @@ class Customer extends MX_Controller{
             $this->securityapi->IsAllowed( $this->accountId, $this->router->fetch_method(), get_class() );
             if ( $this->requestapi->IsValid( $this->input->post(), $this->router->fetch_method(), get_class() ) ){
                 $this->load->library("customerservices");
-                $responseArray = $this->customerservices->CreateAccount($this->input->post("email"), $this->input->post("senha"));
-                $responseArray = $this->responseapi->DataToReponse($responseArray, $this->requestapi->DataRequest());
+                $this->customerservices->DeleteAccount($this->input->post("id"));                
+                $responseArray = $this->responseapi->DataToReponse(array( "message"=> "success delete" ), $this->requestapi->DataRequest());
                 $this->output($responseArray);
             }
         } catch (Exception $ex) {
