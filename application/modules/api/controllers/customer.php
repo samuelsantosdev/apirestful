@@ -109,13 +109,13 @@ class Customer extends MX_Controller{
     }
     
     /**
-     * method=put
+     * method=post
      * request=updateaccount
      * response=account
      */
     public function UpdateAccount(){
         try{
-            $this->input->input_stream('token', FALSE);
+            $put = methods_data();
             $this->accountId = $this->tokenservices->ValidToken($this->input->post("token"));
             $this->securityapi->IsAllowed( $this->accountId, $this->router->fetch_method(), get_class() );
             if ( $this->requestapi->IsValid( $this->input->post(), $this->router->fetch_method(), get_class() ) ){
