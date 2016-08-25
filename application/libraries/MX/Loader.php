@@ -133,6 +133,38 @@ class MX_Loader extends CI_Loader
 		foreach($languages as $_language) $this->language($_language);
 	}
 	
+        
+        
+        
+        /** Load a request **/
+	public function request($request = '') {
+		
+		$class = strtolower(basename($request));
+
+		if (isset($this->_ci_classes[$class]) AND $_alias = $this->_ci_classes[$class])
+			return CI::$APP->$_alias;
+			
+		$_alias = $class;
+		
+		list($path, $_request) = Modules::find($request, $this->_module, 'requests/');
+			
+		if ($path === FALSE) {			
+			$this->_ci_load_class($request);
+			$_alias = $this->_ci_classes[$class];
+			
+		} else {	
+			Modules::load_file($_request, $path);
+			$request = ucfirst($_request);
+			CI::$APP->$_alias = new $request();
+			$this->_ci_classes[$class] = $_alias;
+		}
+		
+		return CI::$APP->$_alias;
+    }
+        
+        
+        
+        
 	/** Load a module library **/
 	public function library($library = '', $params = NULL, $object_name = NULL) {
 		
