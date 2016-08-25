@@ -28,4 +28,4 @@ Com 15 minutos de inatividade o Token e seu RefreshToken perdem validade
 \apirestful\application\modules\api\requests
 
 ##Responses
-\apirestful\application\modules\api\requests
+\apirestful\application\modules\api\responses
