@@ -19,7 +19,10 @@ class RequestAPI{
         if($_SERVER["REQUEST_METHOD"] != strtoupper($requestParams['method']))
             throw new Exception("Method {$_SERVER["REQUEST_METHOD"]} not allowed for this URI", 405);
         
-        if($this->CompareRequest($data, $requestParams['request']) == FALSE || empty($data))
+        if(strtoupper($requestParams['method']) == 'GET' )
+            return TRUE;
+        
+        if($this->CompareRequest($data, $requestParams['request']) == FALSE || empty($data)  )
             throw new Exception("Json properties invalid", 400);
         
         return TRUE;

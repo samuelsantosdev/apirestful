@@ -9,15 +9,15 @@ class CustomerServices{
         $this->CI =& get_instance();
     }
     
-    public function CreateAccount($email, $senha){
+    public function CreateAccount($email, $pass){
         
-        $this->Validate($email, $senha);
+        $this->Validate($email, $pass);
         
         $secret = trim(com_create_guid(), '{}');
         $apikey = MD5(trim(com_create_guid(), '{}'));
         $data = array(
             'Email'=>$email, 
-            "Pass" => PassEncript( $email, $senha), 
+            "Pass" => PassEncript( $email, $pass), 
             'SecretKey'=> $secret, 
             'ApiKey' => $apikey,
             'Active'=>1);
@@ -36,8 +36,13 @@ class CustomerServices{
         return $customer->row();
     }
     
-    private function Validate($email, $senha){
-        if(strlen($senha) < 4)
+    public function GetAllMethods($accountId){
+        $methods = $this->CI->db->get_where("AccountMethod", array('AccountId'=>$accountId));
+        return $methods->result();
+    }
+    
+    private function Validate($email, $pass){
+        if(strlen($pass) < 4)
             throw new Exception ("Password required four characteres or more", 400);
         
         if(!filter_var($email, FILTER_VALIDATE_EMAIL))

@@ -13,6 +13,7 @@ class TokenServices{
         $time = strtotime($tokenDb->LastActivity);
         $endTime = date("Y-m-d H:i:s", strtotime('+5 minutes', $time));
         if($endTime <= date("Y-m-d H:i:s")){
+            $this->CI->db->update("Token", array("LastActivity"=>date("Y-m-d H:i:s")), array("Id" => $tokenDb->Id) );
             throw new Exception ("Token Expired, refresh your token", 403);
         }
     }
@@ -34,7 +35,7 @@ class TokenServices{
             $this->ExpiredToken($tokenRow);
                 
             $token = trim(com_create_guid(), '{}');
-            $this->CI->db->update("Token", array("Token"=>$token), array("Id" => $tokenRow->Id) );
+            $this->CI->db->update("Token", array("Token"=>$token, "LastActivity"=>date("Y-m-d H:i:s")), array("Id" => $tokenRow->Id) );
             
             return array(
                     'Token'=>$token,

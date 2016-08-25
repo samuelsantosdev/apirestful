@@ -20,7 +20,7 @@ class Customer extends MX_Controller{
         try{          
             if ( $this->requestapi->IsValid( $this->input->post(), $this->router->fetch_method(), get_class() ) ){
                 $this->load->library("customerservices");
-                $responseArray = $this->customerservices->CreateAccount($this->input->post("email"), $this->input->post("senha"));
+                $responseArray = $this->customerservices->CreateAccount($this->input->post("email"), $this->input->post("pass"));
                 $responseArray = $this->responseapi->DataToReponse($responseArray, $this->requestapi->DataRequest());
                 $this->output($responseArray);
             }
@@ -31,6 +31,26 @@ class Customer extends MX_Controller{
     
     /**
      * method=get
+     * request=token
+     * response=methods
+     */
+    public function Lookup(){
+        try{
+            $this->accountId = $this->tokenservices->ValidToken($this->input->get("token"));
+            if ( $this->requestapi->IsValid( $this->input->get(), $this->router->fetch_method(), get_class() ) ){
+                $this->load->library("customerservices");
+                $responseArray = $this->customerservices->GetAllMethods($this->accountId);
+                $responseArray = $this->responseapi->DataToReponseList($responseArray, $this->requestapi->DataRequest());
+                $this->output($responseArray);
+            }
+        } catch (Exception $ex) {
+            $this->output_error($ex);
+        }
+    }
+    
+    /**
+     * method=get
+     * request=token
      * response=accounts
      */
     public function GetAccounts(){
@@ -50,6 +70,7 @@ class Customer extends MX_Controller{
     
     /**
      * method=get
+     * request=token
      * response=account
      */
     public function GetAccount($id){
@@ -69,7 +90,8 @@ class Customer extends MX_Controller{
     
     /**
      * method=put
-     * response=updateaccount
+     * request=updateaccount
+     * response=reponsemessage
      */
     public function UpdateAccount(){
         try{
@@ -88,7 +110,8 @@ class Customer extends MX_Controller{
     
     /**
      * method=delete
-     * response=deleteaccount
+     * request=deleteaccount
+     * response=reponsemessage
      */
     public function DeleteAccount(){
         try{
