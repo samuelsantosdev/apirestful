@@ -162,6 +162,31 @@ class MX_Loader extends CI_Loader
 		return CI::$APP->$_alias;
     }
         
+    /** Load a response **/
+	public function response($response = '') {
+		
+		$class = strtolower(basename($response));
+
+		if (isset($this->_ci_classes[$class]) AND $_alias = $this->_ci_classes[$class])
+			return CI::$APP->$_alias;
+			
+		$_alias = $class;
+		
+		list($path, $_response) = Modules::find($response, $this->_module, '$responses/');
+			
+		if ($path === FALSE) {			
+			$this->_ci_load_class($response);
+			$_alias = $this->_ci_classes[$class];
+			
+		} else {	
+			Modules::load_file($_response, $path);
+			$response = ucfirst($_response);
+			CI::$APP->$_alias = new $response();
+			$this->_ci_classes[$class] = $_alias;
+		}
+		
+		return CI::$APP->$_alias;
+    }
         
         
         
